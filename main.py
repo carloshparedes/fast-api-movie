@@ -58,13 +58,16 @@ def create_movie(movie: Movie):
     movies.append(movie)
     return movies 
 
-@app.put('/movies/{id}', tags=["Movies"])
-def update_movie(id: int, movie_update: Movie):
-    for index, movie in enumerate(movies): 
-        if movie["id"] == id:
-            movies[index] = movie_update.dict()
-            return movies
-    return {"error": "Movie not found"}, 404
+@app.put('/movies/{id}', tags=['movies'])
+def update_movie(id: int, movie: Movie):
+	for item in movies:
+		if item["id"] == id:
+			item['title'] = movie.title
+			item['overview'] = movie.overview
+			item['year'] = movie.year
+			item['rating'] = movie.rating
+			item['category'] = movie.category
+			return movies
 
 @app.delete('/movies/{id}', tags=["Movies"])
 def delete_movie(id: int):
