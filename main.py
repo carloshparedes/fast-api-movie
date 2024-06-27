@@ -1,10 +1,19 @@
 from fastapi import FastAPI, Body
 from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 app.title = "My Movie API "
 app.version = "0.0.1"
 
+class Movie(BaseModel):
+    id: Optional[int] = None
+    title: str
+    overview: str
+    year: str
+    rating: float 
+    category: str
 
 movies = [
     {
@@ -45,27 +54,17 @@ def get_movies_by_category(category: str):
     return [movie for movie in movies if movie["category"] == category]
 
 @app.post("/movies", tags=["Movies"])
-def create_movie(id: int = Body(), title: str = Body(), overview: str = Body(), year: str = Body(), rating: float = Body(), category: str = Body()):
-    movies.append({
-        "id": id,
-        "title": title,
-        "overview": overview,
-        "year": year,
-        "rating": rating,
-        "category": category
-    })
+def create_movie(movie: Movie):
+    movies.append(movie)
     return movies 
 
 @app.put('/movies/{id}', tags=["Movies"])
-def update_movie(id: int, title: str = Body(), overview: str = Body(), year: str = Body(), rating: float = Body(), category: str = Body()):
-    for movie in movies: 
+def update_movie(id: int, movie_update: Movie):
+    for index, movie in enumerate(movies): 
         if movie["id"] == id:
-            movie["title"] = title
-            movie["overview"] = overview
-            movie["year"] = year
-            movie["rating"] = rating
-            movie["category"] = category
-    return movies
+            movies[index] = movie_update.dict()
+            return movies
+    return {"error": "Movie not found"}, 404
 
 @app.delete('/movies/{id}', tags=["Movies"])
 def delete_movie(id: int):

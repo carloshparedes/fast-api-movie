@@ -12,5 +12,5 @@ Este proyecto es una API construida con FastAPI para gestionar información sobr
 
 FastAPI genera automáticamente una documentación interactiva utilizando Swagger UI. Puedes acceder a esta documentación navegando a `/docs` en tu servidor local después de iniciar la API.
 
-![Documentación de FastAPI](/img/fast-api-movie-overview.png)
-
+**![Documentación de FastAPI](/img/fast-api-movie-overview.png)
+**
