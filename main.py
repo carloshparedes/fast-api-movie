@@ -67,7 +67,8 @@ def get_movie(id: int = Path(ge = 1, le=2000)):
 
 @app.get('/movies/', tags=["Movies"])
 def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
-    return [movie for movie in movies if movie["category"] == category]
+    data = [movie for movie in movies if movie["category"] == category]
+    return JSONResponse(content=data)
 
 @app.post("/movies", tags=["Movies"])
 def create_movie(movie: Movie):
