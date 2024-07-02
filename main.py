@@ -53,9 +53,9 @@ movies = [
 def message():
     return HTMLResponse("<h1>Welcome to My Movie API</h1>")
 
-@app.get("/movies", tags=["Movies"], response_model=List[Movie])
+@app.get("/movies", tags=["Movies"], response_model=List[Movie], status_code=200)
 def get_movies() -> List[Movie]:
-    return JSONResponse(content=movies)
+    return JSONResponse(status_code=200, content=movies)
 
 @app.get("/movies/{id}", tags=["Movies"], response_model=Movie)
 def get_movie(id: int = Path(ge = 1, le=2000)) -> Movie:
