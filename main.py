@@ -8,6 +8,7 @@ from jwt_manager import create_token, validate_token
 from fastapi.security import HTTPBearer
 from config.database import Session, engine, Base
 from models.movie import Movie as MovieModel
+from fastapi.encoders import jsonable_encoder
 
 app = FastAPI()
 app.title = "My Movie API "
@@ -80,14 +81,17 @@ def login(user: User):
     
 @app.get("/movies", tags=["Movies"], response_model=List[Movie], status_code=200, dependencies=[Depends(JWTBearer())])
 def get_movies() -> List[Movie]:
-    return JSONResponse(status_code=200, content=movies)
+    db = Session()
+    result = db.query(MovieModel).all()
+    return JSONResponse(status_code=200, content=jsonable_encoder(result))
 
 @app.get("/movies/{id}", tags=["Movies"], response_model=Movie)
 def get_movie(id: int = Path(ge = 1, le=2000)) -> Movie:
-    for movie in movies:
-        if movie["id"] == id:
-                return JSONResponse(content=movie)
-    return JSONResponse(status_code=404, content={"message": "Movie not found"})
+    db = Session()
+    result = db.query(MovieModel).filter(MovieModel.id == id).first()
+    if not result:
+         return JSONResponse(status_code=404, content={"message": "Movie not found"})
+    return JSONResponse(status_code=200, content=jsonable_encoder(result))
 
 
 @app.get('/movies/', tags=["Movies"], response_model=List[Movie])
