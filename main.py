@@ -1,13 +1,23 @@
-from fastapi import FastAPI, Body, Path, Query
+from datetime import date
+from fastapi import Depends, FastAPI, Body, HTTPException, Path, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.security.http import HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
-from typing import Optional, List
-from jwt_manager import create_token
+from typing import Coroutine, Optional, List
+from jwt_manager import create_token, validate_token
+from fastapi.security import HTTPBearer
 
 app = FastAPI()
 app.title = "My Movie API "
 app.version = "0.0.1"
 
+class JWTBearer(HTTPBearer):
+    async def __call__(self, request: Request):
+        auth = await super().__call__(request)
+        valid_token = validate_token(auth.credentials)
+        if valid_token['username'] != 'admin':
+            raise HTTPException(status_code=403, detail="Unauthorized")
+     
 class User(BaseModel):
     username: str
     password: str
@@ -64,8 +74,7 @@ def login(user: User):
         token: str = create_token(user.model_dump())
         return JSONResponse(status_code=200, content={"token": token})
     
-
-@app.get("/movies", tags=["Movies"], response_model=List[Movie], status_code=200)
+@app.get("/movies", tags=["Movies"], response_model=List[Movie], status_code=200, dependencies=[Depends(JWTBearer())])
 def get_movies() -> List[Movie]:
     return JSONResponse(status_code=200, content=movies)
 
