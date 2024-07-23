@@ -4,24 +4,20 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security.http import HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from typing import Coroutine, Optional, List
-from jwt_manager import create_token, validate_token
-from fastapi.security import HTTPBearer
 from config.database import Session, engine, Base
 from models.movie import Movie as MovieModel
 from fastapi.encoders import jsonable_encoder
+from middlewares.error_handler import ErrorHandler
+from middlewares.jwt_bearer import JWTBearer
 
 app = FastAPI()
 app.title = "My Movie API "
 app.version = "0.0.1"
+app.add_middleware(ErrorHandler)
 
 Base.metadata.create_all(bind=engine)
 
-class JWTBearer(HTTPBearer):
-    async def __call__(self, request: Request):
-        auth = await super().__call__(request)
-        valid_token = validate_token(auth.credentials)
-        if valid_token['username'] != 'admin':
-            raise HTTPException(status_code=403, detail="Unauthorized")
+
      
 class User(BaseModel):
     username: str
