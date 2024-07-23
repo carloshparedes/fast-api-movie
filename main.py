@@ -14,13 +14,6 @@ app.include_router(movie_router)
 
 Base.metadata.create_all(bind=engine)
 
-
-     
-class User(BaseModel):
-    username: str
-    password: str
-
-
 movies = [
     {
         "id": 1,
@@ -43,10 +36,3 @@ movies = [
 @app.get("/", tags=["Home"])
 def message():
     return HTMLResponse("<h1>Welcome to My Movie API</h1>")
-
-@app.post("/login", tags=["auth"])
-def login(user: User):
-     if user.username == "admin" and user.password == "admin":
-        token: str = create_token(user.model_dump())
-        return JSONResponse(status_code=200, content={"token": token})
-    
