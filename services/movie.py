@@ -24,3 +24,13 @@ class MovieService():
         self.db.add(new_movie)
         self.db.commit()
         return {"message": "Movie created successfully"}
+    
+    def update_movie(self, id: int, movie: Movie):
+        movie = self.db.query(MovieModel).filter(MovieModel.id == id).first()
+        movie.title = movie.title
+        movie.overview = movie.overview
+        movie.year = movie.year
+        movie.rating = movie.rating
+        movie.category = movie.category
+        self.db.commit()
+        return movie
