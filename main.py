@@ -1,7 +1,5 @@
-from datetime import date
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, JSONResponse
-from pydantic import BaseModel
+from fastapi.responses import HTMLResponse
 from config.database import engine, Base
 from middlewares.error_handler import ErrorHandler
 from routers.movie import movie_router
